@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polynomial Dungeon Master</title>
+    <style>
+        :root {
+            --primary: #4a148c;
+            --secondary: #ff6f00;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 2px solid var(--primary);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--secondary);
+            margin-top: 0;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            background: #333;
+            padding: 10px;
+            border-radius: 25px;
+        }
+
+        .step {
+            padding: 5px 15px;
+            border-radius: 15px;
+            background: #444;
+            font-size: 14px;
+        }
+
+        .step.active {
+            background: var(--primary);
+            font-weight: bold;
+        }
+
+        .concept-box {
+            background: rgba(74, 20, 140, 0.2);
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .quest-box {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+            border: 1px dashed var(--secondary);
+        }
+
+        .math-expr {
+            font-family: 'Courier New', Courier, monospace;
+            background: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #00ffcc;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        .input-area {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="number"] {
+            padding: 12px;
+            font-size: 18px;
+            width: 120px;
+            border-radius: 8px;
+            border: 2px solid #555;
+            background: #333;
+            color: #fff;
+            text-align: center;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #e65100;
+            transform: scale(1.05);
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 30px;
+            margin-top: 15px;
+        }
+
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .choice-btn {
+            background: #3a3a3a;
+            border: 2px solid var(--primary);
+        }
+        .choice-btn:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>⚔️ Polynomial Dungeon Master ⚔️</h1>
+        
+        <div class="progress-bar">
+            <span class="step active" id="st1">Stage 1: Remainder Chest</span>
+            <span class="step" id="st2">Stage 2: Factor Gate</span>
+            <span class="step" id="st3">Victory</span>
+        </div>
+
+        <div id="stage1">
+            <div class="concept-box">
+                <h3>💡 Master's Tip (Remainder Theorem)</h3>
+                <p>To find the remainder when <b>f(x)</b> is divided by <b>(x - c)</b>, you don't need Long Division! Just substitute <b>x = c</b> into the polynomial. The remainder is simply <b>f(c)</b>!</p>
+            </div>
+
+            <div class="quest-box">
+                <p>🔒 A locked chest blocks your way! To find the hidden key (the remainder), solve:</p>
+                Find the remainder when <br>
+                <span class="math-expr">f(x) = x<sup>3</sup> + 3x<sup>2</sup> - 2x + 4</span> <br>
+                is divided by <span class="math-expr">x - 2</span>
+            </div>
+
+            <p style="text-align: center; color: #aaa;">(Hint: Substitute x = 2 into f(x) and calculate!)</p>
+
+            <div class="input-area">
+                <input type="number" id="s1-answer" placeholder="Answer">
+                <button onclick="checkStage1()">Unlock Chest</button>
+            </div>
+            <div id="s1-feedback" class="feedback"></div>
+        </div>
+
+        <div id="stage2" style="display: none;">
+            <div class="concept-box">
+                <h3>💡 Master's Tip (Factor Theorem)</h3>
+                <p>If <b>f(c) = 0</b>, then <b>(x - c)</b> is a <b>Factor</b> of f(x) (meaning it divides perfectly with 0 remainder). If f(c) isn't 0, it's NOT a factor!</p>
+            </div>
+
+            <div class="quest-box">
+                <p>🚪 You reached the Dungeon Exit. One of these doors has a perfect seal (Remainder = 0). Which of the following is a <b>FACTOR</b> of:</p>
+                <span class="math-expr">f(x) = x<sup>3</sup> - 6x<sup>2</sup> + 11x - 6</span>
+            </div>
+
+            <p style="text-align: center; color: #aaa;">(Hint: Test which x-value makes f(x) = 0!)</p>
+
+            <div class="btn-grid">
+                <button class="choice-btn" onclick="checkStage2(1)">Door A: (x - 4)</button>
+                <button class="choice-btn" onclick="checkStage2(2)">Door B: (x - 2)</button>
+                <button class="choice-btn" onclick="checkStage2(3)">Door C: (x + 1)</button>
+                <button class="choice-btn" onclick="checkStage2(4)">Door D: (x - 5)</button>
+            </div>
+            <div id="s2-feedback" class="feedback"></div>
+        </div>
+
+        <div id="victory" style="display: none; text-align: center;">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <p style="font-size: 18px;">You have mastered the foundational concepts of Remainder and Factor Theorems!</p>
+            <p>Now you are ready to conquer the harder questions in your Exercise! 🌟</p>
+            <button onclick="resetGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        function checkStage1() {
+            const ans = document.getElementById('s1-answer').value;
+            const feedback = document.getElementById('s1-feedback');
+            
+            // f(2) = 2^3 + 3(2)^2 - 2(2) + 4 = 8 + 12 - 4 + 4 = 20
+            if (parseInt(ans) === 20) {
+                feedback.className = "feedback success";
+                feedback.innerHTML = "🎯 Correct! The chest opens and you found the key! Moving to Stage 2...";
+                
+                setTimeout(() => {
+                    document.getElementById('stage1').style.display = 'none';
+                    document.getElementById('stage2').style.display = 'block';
+                    document.getElementById('st1').className = 'step';
+                    document.getElementById('st2').className = 'step active';
+                }, 2000);
+            } else {
+                feedback.className = "feedback error";
+                feedback.innerHTML = "❌ Oops! That's not the correct remainder. Try substituting x = 2 again!";
+            }
+        }
+
+        function checkStage2(choice) {
+            const feedback = document.getElementById('s2-feedback');
+            // f(x) = x^3 - 6x^2 + 11x - 6  (This is actually Question 8 from your PDF!)
+            // f(4) = 64 - 96 + 44 - 6 = 6
+            // f(2) = 8 - 24 + 22 - 6 = 0  <- Correct (x-2) is a factor
+            // f(-1) = -1 - 6 - 11 - 6 = -24
+            // f(5) = 125 - 150 + 55 - 6 = 24
+
+            if (choice === 2) {
+                feedback.className = "feedback success";
+                feedback.innerHTML = "🎯 Brilliant! f(2) = 0, so (x - 2) is a factor! The gate opens!";
+                
+                setTimeout(() => {
+                    document.getElementById('stage2').style.display = 'none';
+                    document.getElementById('victory').style.display = 'block';
+                    document.getElementById('st2').className = 'step';
+                    document.getElementById('st3').className = 'step active';
+                }, 2000);
+            } else {
+                feedback.className = "feedback error";
+                let wrongVal = "";
+                if(choice === 1) wrongVal = "f(4) = 6 ≠ 0";
+                if(choice === 3) wrongVal = "f(-1) = -24 ≠ 0";
+                if(choice === 4) wrongVal = "f(5) = 24 ≠ 0";
+                feedback.innerHTML = `❌ Wrong Door! For this choice, ${wrongVal}. It leaves a remainder, so it's not a factor!`;
+            }
+        }
+
+        function resetGame() {
+            document.getElementById('victory').style.display = 'none';
+            document.getElementById('stage1').style.display = 'block';
+            document.getElementById('s1-answer').value = '';
+            document.getElementById('s1-feedback').innerHTML = '';
+            document.getElementById('s2-feedback').innerHTML = '';
+            document.getElementById('st3').className = 'step';
+            document.getElementById('st1').className = 'step active';
+        }
+    </script>
+</body>
+</html>
